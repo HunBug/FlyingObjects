@@ -1,4 +1,4 @@
-from flying_object import FlyingObject
+from .flying_object import FlyingObject
 from dataclasses import dataclass
 
 class Sector:

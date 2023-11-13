@@ -2,8 +2,8 @@ from typing import Optional
 from datetime import datetime
 import re
 import math
-from point_2d import Point2D
-from bezier_path import BezierPath
+from .point_2d import Point2D
+from .bezier_path import BezierPath
 
 class FlyingObject:
     def __init__(self, object_id: str, initial_pos: Point2D, speed: float, creation_time: datetime,

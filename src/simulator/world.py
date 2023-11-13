@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List, Optional
-from flying_object import FlyingObject
-from sector import Sector
+from .flying_object import FlyingObject
+from .sector import Sector
 
 class World:
     """
@@ -48,9 +48,9 @@ class World:
         for obj in list(self.objects.values()):
             obj.update(current_time)
             if obj.is_expired:
-                self._remove_object(obj.id)
+                self._remove_object(obj.object_id)
             if not self._is_valid_position(obj):
-                self._remove_object(obj.id)
+                self._remove_object(obj.object_id)
 
     def _is_valid_position(self, obj: FlyingObject) -> bool:
         """

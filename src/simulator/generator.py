@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from random import choice, randint, uniform
 import string
-from point_2d import Point2D
-from world import World
-from flying_object import FlyingObject
-from sector import Sector
+from .point_2d import Point2D
+from .world import World
+from .flying_object import FlyingObject
+from .sector import Sector
+import logging
 
 class Generator:
     def __init__(self, start_time: datetime,
@@ -62,8 +63,17 @@ class Generator:
             # Update the world and remove expired objects
             self.world.update(current_time)
 
+            self._debug_log(current_time)
+
             # Sleep until the next simulation step
             current_time += self.simulation_resolution
+
+    def _debug_log(self, current_time: datetime):
+        # logging.debug(f"Current time: {current_time}")
+        # logging.debug(f"Number of objects: {len(self.world.objects)}")
+        if len(self.world.objects) > 0:
+            first_object = list(self.world.objects.values())[0]
+            logging.debug(f"Current time: {current_time} -> {first_object.arrive_time - current_time} {first_object.position.x}")
 
     def _generate_object_creation_times(self, start_time: datetime,
                                         simulation_duration: timedelta,

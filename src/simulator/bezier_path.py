@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from point_2d import Point2D
+from .point_2d import Point2D
 import math
 
 class BezierPath:
@@ -78,7 +78,8 @@ class BezierPath:
         time_elapsed = current_time - start_time
 
         # Calculate how far along the path the object should be
-        distance_covered = time_elapsed.microseconds * speed / 1000000
+        # distance_covered = time_elapsed.microseconds * speed / 1000000
+        distance_covered = time_elapsed.total_seconds() * speed
         distance_covered = min(distance_covered, total_distance)
         t = distance_covered / total_distance
 
