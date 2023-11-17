@@ -9,6 +9,7 @@ from .data_writer import DataWriterBase
 import logging
 from tqdm import tqdm, trange
 from tqdm.contrib.logging import logging_redirect_tqdm
+from math import cos, sin, pi
 
 class Generator:
     def __init__(self, start_time: datetime,
@@ -69,7 +70,7 @@ class Generator:
     def _create_object(self, creation_time: datetime) -> FlyingObject:
         # Create a single object with random properties
         object_id = self._generate_object_id()
-        initial_pos = self._generate_initial_position()
+        initial_pos = self._generate_position()
         speed = self._generate_speed()
         payload = self._generate_payload()
 
@@ -94,8 +95,8 @@ class Generator:
                         object_creation_times[-1] <= current_time):
                     # Create a new object and add it to the world
                     obj = self._create_object(current_time)
-                    destination = self._generate_initial_position() # todo add destination generation
-                    way_point = self._generate_initial_position() # todo add way_point generation
+                    destination = self._generate_position(obj.initial_pos, 150*1000, 400*1000)
+                    way_point = self._generate_position(obj.initial_pos, 100*1000, 150*1000)
                     obj.set_path(destination=destination, way_point=way_point)
                     self.world.add_object(obj)
                     object_creation_times.pop()
@@ -151,15 +152,30 @@ class Generator:
         characters = string.ascii_lowercase + string.digits
         return ''.join(choice(characters) for _ in range(length))
     
-    def _generate_initial_position(self) -> Point2D:
+    def _generate_position(self, start_point: Point2D = None, min_distance: float = None, max_distance: float = None) -> Point2D:
         """
-        Generate a random initial position for an object.
+        Generate a random initial position for an object, optionally at a certain distance from a start point.
 
+        :param start_point: Optional starting point to measure distance from.
+        :param min_distance: Minimum distance from the start point.
+        :param max_distance: Maximum distance from the start point.
         :return: A random initial position.
         """
-        # A random position within the world
-        x = uniform(self.world.world_size.x_lower.boundary, self.world.world_size.x_upper.boundary)
-        y = uniform(self.world.world_size.y_lower.boundary, self.world.world_size.y_upper.boundary)
+        if start_point and min_distance is not None and max_distance is not None:
+            # Generate a point at a random distance and angle from start_point
+            distance = uniform(min_distance, max_distance)
+            angle = uniform(0, 2*pi)
+            x = start_point.x + distance * cos(angle)
+            y = start_point.y + distance * sin(angle)
+
+            # Ensure the point is within world boundaries
+            x = min(max(x, self.world.world_size.x_lower.boundary), self.world.world_size.x_upper.boundary)
+            y = min(max(y, self.world.world_size.y_lower.boundary), self.world.world_size.y_upper.boundary)
+        else:
+            # A random position within the world
+            x = uniform(self.world.world_size.x_lower.boundary, self.world.world_size.x_upper.boundary)
+            y = uniform(self.world.world_size.y_lower.boundary, self.world.world_size.y_upper.boundary)
+
         return Point2D(x, y)
     
     def _generate_speed(self, min: float = 10, max: float = 80) -> float:

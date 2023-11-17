@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 from .flying_object import FlyingObject
 from .sector import Sector
 from .data_writer import DataWriterBase
+import logging
 
 class World:
     """
@@ -37,6 +38,7 @@ class World:
         self.objects[obj.object_id] = obj
         if self.data_writer is not None:
             self.data_writer.write_object(obj)
+        logging.info(f"Added object with ID {obj.object_id} to the world")
 
     def _remove_object(self, obj_id: int) -> None:
         """
@@ -45,6 +47,7 @@ class World:
         :param obj_id: The ID of the object to remove.
         """
         self.objects.pop(obj_id, None)
+        logging.info(f"Removed object with ID {obj_id} from the world")
 
     def update(self, current_time: datetime) -> None:
         """
