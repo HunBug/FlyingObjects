@@ -10,11 +10,7 @@ Simulation of flying objects
  - random init seed
  - all the TODOs in the code
  - consistent code style
+ - read db config from env or config file
+ - assuming queried data can be fit into memory. Pagination is not implemented
 
 Check whether all requirements are met. https://trackdeep.ai/back-end-developer-test-task/
-
-
-!!!!!!!!!!!!!!
-destination = self._generate_initial_position() # todo add destination generation
-                way_point = self._generate_initial_position() # todo add way_point generation
-                !!!!!!!!!!!!!!!!!

@@ -7,8 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     logging.info("Initializing the simulation")
-    # Initialize the writer
-    # harcoded config for simplicity.
+
     database_config = {
         "host": "localhost",
         "port": 5432,
@@ -22,10 +21,11 @@ if __name__ == "__main__":
                     f"{database_config['database']}"
     writer = SqlDataWriter(database_uri)
     writer.connect()
+    
     generator = Generator(start_time=datetime.now(),
                             simulation_duration=timedelta(hours=10),
                             simulation_resolution=timedelta(milliseconds=150),
-                            num_objects=500,
+                            num_objects=10,
                             data_writer=writer)
     logging.info("Running the simulation")
     generator.run_simulation()
