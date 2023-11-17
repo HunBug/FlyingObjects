@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from .flying_object import FlyingObject
 from .sector import Sector
+from .data_writer import DataWriterBase
 
 class World:
     """
@@ -9,7 +10,8 @@ class World:
     It manages and updates the state of all simulation objects within it.
     """
 
-    def __init__(self, world_size: Sector, sectors: Optional[List[Sector]]) -> None:
+    def __init__(self, world_size: Sector, sectors: Optional[List[Sector]],
+                 data_writer: DataWriterBase = None) -> None:
         """
         Initializes the World with a specific size and number of sectors.
 
@@ -19,6 +21,7 @@ class World:
         self.world_size = world_size
         self.sectors = sectors
         self.objects: Dict[int, FlyingObject] = {}
+        self.data_writer = data_writer
 
     def add_object(self, obj: FlyingObject) -> None:
         """
@@ -32,6 +35,8 @@ class World:
         if not self._is_valid_position(obj):
             raise ValueError(f"Object with ID {obj.id} is not within the world")
         self.objects[obj.object_id] = obj
+        if self.data_writer is not None:
+            self.data_writer.write_object(obj)
 
     def _remove_object(self, obj_id: int) -> None:
         """
@@ -51,6 +56,9 @@ class World:
                 self._remove_object(obj.object_id)
             if not self._is_valid_position(obj):
                 self._remove_object(obj.object_id)
+        if self.data_writer is not None:
+            for obj in self.objects.values():
+                self.data_writer.write_object_state(obj, current_time, self._get_sector(obj))
 
     def _is_valid_position(self, obj: FlyingObject) -> bool:
         """
@@ -62,11 +70,18 @@ class World:
         return self.world_size.contains(obj.position)
         
 
-    def find_objects_in_sector(self, sector_number: int) -> List[FlyingObject]:
+    def _get_sector(self, obj: FlyingObject) -> str:
         """
-        Finds and returns all objects in a specified sector.
+        Determines the sector that an object is in.
 
-        :param sector_number: The sector number to search within.
-        :return: A list of SimulationObjects in the specified sector.
+        :param obj: The object whose sector is to be determined.
         """
-        return [obj for obj in self.objects.values() if obj.is_in_sector(sector_number)]
+        sector_name: str = None
+        for sector in self.sectors:
+            if sector.contains(obj.position):
+                if sector_name is not None:
+                    raise ValueError(f"Object with ID {obj.object_id} is in multiple sectors")
+                sector_name = sector.name
+        if sector_name is None:
+            raise ValueError(f"Object with ID {obj.object_id} is not in any sector")
+        return sector_name

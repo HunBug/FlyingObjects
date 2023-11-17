@@ -9,6 +9,7 @@ Simulation of flying objects
  - bezier path
  - random init seed
  - all the TODOs in the code
+ - consistent code style
 
 Check whether all requirements are met. https://trackdeep.ai/back-end-developer-test-task/
 
