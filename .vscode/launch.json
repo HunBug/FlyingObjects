@@ -12,6 +12,20 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": {"PYTHONPATH": "${workspaceFolder}/src/"}
+        },
+        {
+            "name": "Python: Profile",
+            "type": "austin",
+            "label": "Profile tests",
+            "command": [
+                "poetry",
+                "run"
+            ],
+            "args": [
+                "python",
+                "-m",
+                "pytest",
+            ]
         }
     ]
 }
