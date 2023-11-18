@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from .world import FlyingObject
+from .flying_object import FlyingObject
 
 
 class DataWriterBase(ABC):
@@ -21,4 +21,16 @@ class DataWriterBase(ABC):
 
     @abstractmethod
     def close(self):
+        pass
+
+    @abstractmethod
+    def log_simulation_start(self, start_time: datetime):
+        pass
+
+    @abstractmethod
+    def log_simulation_end(self, end_time: datetime):
+        pass
+
+    @abstractmethod
+    def log_simulation_progress(self, progress: float):
         pass

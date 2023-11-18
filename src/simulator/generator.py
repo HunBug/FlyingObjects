@@ -24,6 +24,7 @@ class Generator:
         data_writer: DataWriterBase = None,
     ):
         self.world = self._initialize_world(data_writer)
+        self.data_writer = data_writer
         self.simulation_duration = simulation_duration
         self.num_objects = num_objects
         self.start_time = start_time
@@ -119,6 +120,13 @@ class Generator:
 
                 # Sleep until the next simulation step
                 current_time += self.simulation_resolution
+                if self.data_writer is not None:
+                    progress_precentage = (
+                        current_time - self.start_time
+                    ) / self.simulation_duration
+                    self.data_writer.log_simulation_progress(
+                        progress=progress_precentage
+                    )
 
     def _debug_log(self, current_time: datetime):
         # logging.debug(f"Current time: {current_time}")
