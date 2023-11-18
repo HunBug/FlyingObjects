@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simulation Control</title>
+</head>
+
+<body>
+    <h1>Simulation Control Panel</h1>
+
+    <button onclick="startSimulation()">Start Simulation</button>
+
+    <h2>Query Object Trajectory</h2>
+    <input type="text" id="object_id" placeholder="Object ID">
+    <input type="datetime-local" id="start_time_obj">
+    <input type="datetime-local" id="end_time_obj">
+    <button onclick="queryObjectTrajectory()">Query Trajectory</button>
+
+    <h2>Query Sector Snapshot</h2>
+    <input type="text" id="sector_id" placeholder="Sector ID">
+    <input type="datetime-local" id="start_time_sector">
+    <input type="datetime-local" id="end_time_sector">
+    <button onclick="querySectorSnapshot()">Query Snapshot</button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

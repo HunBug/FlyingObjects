@@ -1,9 +1,11 @@
+import logging
 from datetime import datetime
 from typing import Dict, List, Optional
+
+from .data_writer import DataWriterBase
 from .flying_object import FlyingObject
 from .sector import Sector
-from .data_writer import DataWriterBase
-import logging
+
 
 class World:
     """
@@ -11,8 +13,12 @@ class World:
     It manages and updates the state of all simulation objects within it.
     """
 
-    def __init__(self, world_size: Sector, sectors: Optional[List[Sector]],
-                 data_writer: DataWriterBase = None) -> None:
+    def __init__(
+        self,
+        world_size: Sector,
+        sectors: Optional[List[Sector]],
+        data_writer: DataWriterBase = None,
+    ) -> None:
         """
         Initializes the World with a specific size and number of sectors.
 
@@ -61,7 +67,9 @@ class World:
                 self._remove_object(obj.object_id)
         if self.data_writer is not None:
             for obj in self.objects.values():
-                self.data_writer.write_object_state(obj, current_time, self._get_sector(obj))
+                self.data_writer.write_object_state(
+                    obj, current_time, self._get_sector(obj)
+                )
 
     def _is_valid_position(self, obj: FlyingObject) -> bool:
         """
@@ -71,7 +79,6 @@ class World:
         """
         # check if the object is within the world
         return self.world_size.contains(obj.position)
-        
 
     def _get_sector(self, obj: FlyingObject) -> str:
         """
@@ -83,7 +90,9 @@ class World:
         for sector in self.sectors:
             if sector.contains(obj.position):
                 if sector_name is not None:
-                    raise ValueError(f"Object with ID {obj.object_id} is in multiple sectors")
+                    raise ValueError(
+                        f"Object with ID {obj.object_id} is in multiple sectors"
+                    )
                 sector_name = sector.name
         if sector_name is None:
             raise ValueError(f"Object with ID {obj.object_id} is not in any sector")

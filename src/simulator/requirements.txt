@@ -2,3 +2,5 @@ matplotlib==3.8.1
 sqlalchemy==2.0.23
 psycopg2==2.9.9
 tqdm==4.66.1
+flask==3.0.0
+flask-cors==4.0.0

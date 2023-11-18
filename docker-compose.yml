@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "6432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  simulator:
+    build:
+      context: . # Set to the repo root
+      dockerfile: docker/simulator/Dockerfile
+    ports:
+      - "6002:5000" # Change if using a different port
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  webservice:
+    build:
+      context: . # Set to the repo root
+      dockerfile: docker/web_service/Dockerfile
+    ports:
+      - "6001:5001" # Change if using a different port
+    depends_on:
+      postgres:
+        condition: service_healthy
