@@ -3,25 +3,17 @@ from itertools import groupby
 from operator import attrgetter
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from shared.models import FlyingObjectOrm, FlyingObjectStateOrm
+from shared.postgres_tools import PostgresTools
 
 app = Flask(__name__)
+CORS(app)
 
-database_config = {
-    "host": "localhost",
-    "port": 5432,
-    "database": "flying_simulator",
-    "user": "postgres",
-    "password": "postgres",
-}
-database_uri = (
-    "postgresql://"
-    + f"{database_config['user']}:{database_config['password']}@"
-    + f"{database_config['host']}:{database_config['port']}/"
-    + f"{database_config['database']}"
-)
+database_config = PostgresTools.get_default_config_dict()  # read from config file
+database_uri = PostgresTools.get_db_url(database_config)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 db = SQLAlchemy(app)
 
@@ -85,21 +77,6 @@ def query_sector_snapshot():
         .all()
     )
 
-    # result = {
-    #     "sector_id": sector_id,
-    #     "start_time": start_time,
-    #     "end_time": end_time,
-    #     "objects": [{
-    #         "object_id": state.object_id,
-    #         "x": state.x,
-    #         "y": state.y,
-    #         "angle": state.angle,
-    #         "state_time": state.state_time,
-    #         "expire_time": state.expire_time,
-    #         "sector": state.sector
-    #     } for state in objects_result]
-    # }
-
     # Group the results by object_id
     grouped_results = groupby(objects_result, key=attrgetter("object_id"))
 
@@ -131,4 +108,4 @@ def query_sector_snapshot():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True, port=5001)

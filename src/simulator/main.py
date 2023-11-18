@@ -1,14 +1,24 @@
+import argparse
+import asyncio
 import logging
 from datetime import datetime, timedelta
 from multiprocessing import Process
+from threading import Thread
+
+from flask import Flask, jsonify
+from flask_cors import CORS
+
+from shared.postgres_tools import PostgresTools
 
 from .generator import Generator
 from .sql_data_writer import SqlDataWriter
 
 logging.basicConfig(level=logging.INFO)
+app = Flask(__name__)
+CORS(app)
 
 
-def run_single_simulation(
+def simulation_task(
     database_uri, start_time, duration, resolution, num_objects, simulation_id
 ):
     writer = SqlDataWriter(database_uri, simulation_id=simulation_id)
@@ -26,23 +36,17 @@ def run_single_simulation(
     writer.close()
 
 
-def main():
+async def run_simulation():
     logging.basicConfig(level=logging.INFO)
-    logging.info("Initializing the simulation")
 
-    database_config = {
-        "host": "localhost",
-        "port": 5432,
-        "database": "flying_simulator",
-        "user": "postgres",
-        "password": "postgres",
-    }
-    database_uri = (
-        "postgresql://"
-        + f"{database_config['user']}:{database_config['password']}@"
-        + f"{database_config['host']}:{database_config['port']}/"
-        + f"{database_config['database']}"
-    )
+    logging.info("Initializing the database")
+    database_config = PostgresTools.get_default_config_dict()  # read from config file
+    PostgresTools.create_postgres_db(database_config)
+    PostgresTools.create_tables(database_config)
+
+    database_uri = PostgresTools.get_db_url(database_config)
+
+    logging.info("Initializing the simulation")
 
     # Define your simulation parameters
     simulation_start_time = datetime.now()
@@ -65,7 +69,7 @@ def main():
     writer.close()
     if len(process_num_objects) == 1:
         logging.info("Running single process simulation")
-        run_single_simulation(
+        simulation_task(
             database_uri,
             simulation_start_time,
             simulation_duration,
@@ -79,7 +83,7 @@ def main():
         processes = []
         for num_objects in process_num_objects:
             p = Process(
-                target=run_single_simulation,
+                target=simulation_task,
                 args=(
                     database_uri,
                     simulation_start_time,
@@ -101,6 +105,24 @@ def main():
     writer.connect()
     writer.log_simulation_end(datetime.now())
     writer.close()
+
+
+@app.route("/start_simulation", methods=["POST"])
+def start_simulation():
+    thread = Thread(target=lambda: asyncio.run(run_simulation()))
+    thread.start()
+    return jsonify({"message": "Simulation started"})
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Run the flying simulator.")
+    parser.add_argument("--api", action="store_true", help="Run as a REST API server")
+    args = parser.parse_args()
+
+    if args.api:
+        app.run(host="0.0.0.0", debug=True, port=5000)
+    else:
+        asyncio.run(run_simulation())
 
 
 if __name__ == "__main__":

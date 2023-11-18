@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Index
 from sqlalchemy.ext.declarative import declarative_base
 
 OrmBase = declarative_base()
@@ -38,3 +38,17 @@ class SimulationOrm(OrmBase):
     simulation_end = Column(DateTime, nullable=True)
     last_update = Column(DateTime, nullable=False)
     completion = Column(Float, nullable=False)
+
+
+Index(
+    "idx_flying_object_states_on_object_id_and_time",
+    FlyingObjectStateOrm.simulation_id,
+    FlyingObjectStateOrm.object_id,
+    FlyingObjectStateOrm.state_time,
+)
+Index(
+    "idx_flying_object_states_on_sector_and_time",
+    FlyingObjectStateOrm.simulation_id,
+    FlyingObjectStateOrm.sector,
+    FlyingObjectStateOrm.state_time,
+)

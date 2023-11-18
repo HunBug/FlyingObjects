@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from math import cos, pi, sin
 from random import choice, randint, uniform
 
-from tqdm import tqdm, trange
+from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 
 from .data_writer import DataWriterBase
