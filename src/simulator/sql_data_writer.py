@@ -1,10 +1,13 @@
+import logging
 from datetime import datetime
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from .flying_object import FlyingObject
+
+from shared.models import FlyingObjectOrm, FlyingObjectStateOrm, OrmBase
+
 from .data_writer import DataWriterBase
-import logging
-from shared.models import OrmBase, FlyingObjectOrm, FlyingObjectStateOrm
+from .flying_object import FlyingObject
 
 
 class SqlDataWriter(DataWriterBase):

@@ -1,5 +1,7 @@
-from .point_2d import Point2D
 from dataclasses import dataclass
+
+from .point_2d import Point2D
+
 
 class Sector:
     @dataclass(frozen=True)
@@ -7,8 +9,14 @@ class Sector:
         boundary: float
         inclusive: bool
 
-
-    def __init__(self,name: str, x_lower: Boundary, x_upper: Boundary, y_lower:Boundary, y_upper: Boundary) -> None:
+    def __init__(
+        self,
+        name: str,
+        x_lower: Boundary,
+        x_upper: Boundary,
+        y_lower: Boundary,
+        y_upper: Boundary,
+    ) -> None:
         """
         Initializes a sector with the specified bounds.
 
@@ -26,7 +34,6 @@ class Sector:
         # Validate the sector bounds
         if x_lower.boundary > x_upper.boundary or y_lower.boundary > y_upper.boundary:
             raise ValueError("Invalid sector bounds")
-    
 
     def contains(self, point: Point2D) -> bool:
         """
@@ -35,7 +42,7 @@ class Sector:
         :param obj: The object to check.
         :return: True if the object is within the sector, False otherwise.
         """
-        
+
         contains = True
         if self.x_lower.inclusive:
             if point.x < self.x_lower.boundary:
@@ -66,5 +73,3 @@ class Sector:
                 contains = False
 
         return contains
-        
-        

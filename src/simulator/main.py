@@ -1,8 +1,9 @@
+import logging
 from datetime import datetime, timedelta
+from multiprocessing import Process
+
 from .generator import Generator
 from .sql_data_writer import SqlDataWriter
-import logging
-from multiprocessing import Process
 
 logging.basicConfig(level=logging.INFO)
 
